@@ -1,30 +1,23 @@
 FROM php:8.2-apache
 
 RUN a2enmod rewrite
+RUN docker-php-ext-install pdo pdo_mysql
 
-RUN apt-get update && apt-get install -y \
-    unzip \
-    git \
-    zip \
-    libzip-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN docker-php-ext-install pdo pdo_mysql zip
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
+# Set working directory inside 'project-root'
 WORKDIR /var/www/html
 
-COPY . .
+# Copy ONLY project-root contents, not whole repo
+COPY project-root/ . 
 
-RUN composer install --no-dev --prefer-dist --optimize-autoloader || true
-
+# Set Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
-RUN sed -ri "s#DocumentRoot /var/www/html#DocumentRoot ${APACHE_DOCUMENT_ROOT}#g" /etc/apache2/sites-available/000-default.conf \
- && sed -ri "s#/var/www/#${APACHE_DOCUMENT_ROOT}/#g" /etc/apache2/apache2.conf
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \
+    && sed -ri -e 's!/var/www/!/var/www/html/public/!g' /etc/apache2/apache2.conf
 
-RUN echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n    AllowOverride All\n</Directory>" >> /etc/apache2/apache2.conf
+RUN echo "<Directory /var/www/html/public>
+    AllowOverride All
+</Directory>" >> /etc/apache2/apache2.conf
 
 EXPOSE 80
 CMD ["apache2-foreground"]
