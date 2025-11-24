@@ -1,11 +1,12 @@
 <?php
-$host = '127.0.0.1';
-$db   = 'chandusoft_site';
-$user = 'chandusoft_user';
-$pass = 'SecretP@ss123';
+
+$host = getenv('DB_HOST') ?: '127.0.0.1';
+$db   = getenv('DB_DATABASE') ?: 'local_db';
+$user = getenv('DB_USERNAME') ?: 'local_user';
+$pass = getenv('DB_PASSWORD') ?: 'local_pass';
 $charset = 'utf8mb4';
 
-// 🔹 PayPal Sandbox Credentials
+// PayPal Sandbox Credentials
 $config = [
     'paypal' => [
         'client_id' => "AeMhb8ACVoPBMrfxnmZhUap9eIOAppJe71IAqOvxDuiuXMQwuWk_FUHCQOlCGmDsH9yt0-372L0axs0r",
@@ -15,7 +16,6 @@ $config = [
 ];
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
