@@ -17,10 +17,7 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-avail
     && sed -ri -e 's!/var/www/!/var/www/html/public/!g' /etc/apache2/apache2.conf
 
 # Allow .htaccess inside public folder
-RUN echo "<Directory /var/www/html/public>
-    AllowOverride All
-    Require all granted
-</Directory>" >> /etc/apache2/apache2.conf
+RUN printf "<Directory /var/www/html/public>\n    AllowOverride All\n    Require all granted\n</Directory>\n" >> /etc/apache2/apache2.conf
 
 EXPOSE 80
 
